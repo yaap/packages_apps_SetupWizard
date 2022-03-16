@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
      Copyright (C) 2013-2015 The CyanogenMod Project
-     Copyright (C) 2017-2020 The LineageOS Project
+     Copyright (C) 2017-2020, 2022 The LineageOS Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -99,4 +99,12 @@
     <string name="intro_restore_subtitle" product="tablet">If you have a backup from your last <xliff:g id="name" example="YAAP">%s</xliff:g> tablet, you can restore it here.</string>
     <string name="intro_restore_subtitle" product="default">If you have a backup from your last <xliff:g id="name" example="YAAP">%s</xliff:g> phone, you can restore it here.</string>
     <string name="intro_restore_button">Restore from backup</string>
+
+    <!-- Navigation settings -->
+    <string name="setup_navigation">Navigation</string>
+    <string name="navigation_summary">Choose preferred navigation method</string>
+    <string name="gesture_navigation">Gesture navigation</string>
+    <string name="two_button_navigation">2-button navigation</string>
+    <string name="navbar_navigation">3-button navigation</string>
+    <string name="hide_gesture_hint">Hide gestural navigation hint</string>
 </resources>

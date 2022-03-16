@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2016 The CyanogenMod Project
- * Copyright (C) 2017-2020 The LineageOS Project
+ * Copyright (C) 2017-2020, 2022 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,14 @@
 package org.lineageos.setupwizard;
 
 import static android.os.Binder.getCallingUserHandle;
+import static android.os.UserHandle.USER_CURRENT;
+import static android.view.WindowManagerPolicyConstants.NAV_BAR_MODE_3BUTTON_OVERLAY;
+import static android.view.WindowManagerPolicyConstants.NAV_BAR_MODE_GESTURAL_OVERLAY;
 
 import static org.lineageos.setupwizard.Manifest.permission.FINISH_SETUP;
 import static org.lineageos.setupwizard.SetupWizardApp.ACTION_SETUP_COMPLETE;
 import static org.lineageos.setupwizard.SetupWizardApp.LOGV;
+import static org.lineageos.setupwizard.SetupWizardApp.NAVIGATION_OPTION_KEY;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -29,11 +33,13 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.om.IOverlayManager;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -162,6 +168,7 @@ public class FinishActivity extends BaseSetupWizardActivity {
     }
 
     private void completeSetup() {
+        handleNavigationOption(mSetupWizardApp);
         final WallpaperManager wallpaperManager =
                 WallpaperManager.getInstance(mSetupWizardApp);
         wallpaperManager.forgetLoadedWallpaper();
@@ -170,5 +177,18 @@ public class FinishActivity extends BaseSetupWizardActivity {
         Intent intent = WizardManagerHelper.getNextIntent(getIntent(),
                 Activity.RESULT_OK);
         startActivityForResult(intent, NEXT_REQUEST);
+    }
+
+    private void handleNavigationOption(Context context) {
+        Bundle settingsBundle = mSetupWizardApp.getSettingsBundle();
+        if (settingsBundle.containsKey(NAVIGATION_OPTION_KEY)) {
+            IOverlayManager overlayManager = IOverlayManager.Stub.asInterface(
+                    ServiceManager.getService(Context.OVERLAY_SERVICE));
+            String selectedNavMode = settingsBundle.getString(NAVIGATION_OPTION_KEY);
+
+            try {
+                overlayManager.setEnabledExclusiveInCategory(selectedNavMode, USER_CURRENT);
+            } catch (Exception e) {}
+        }
     }
 }
