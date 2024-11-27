@@ -8,11 +8,17 @@ package org.lineageos.setupwizard;
 
 import static org.lineageos.setupwizard.SetupWizardApp.ACTION_EMERGENCY_DIAL;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.UserHandle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.android.internal.accessibility.util.AccessibilityUtils;
 
 import com.google.android.setupcompat.template.FooterButtonStyleUtils;
 import com.google.android.setupcompat.util.SystemBarHelper;
@@ -23,6 +29,9 @@ public class WelcomeActivity extends SubBaseActivity {
 
     private static final String ACTION_ACCESSIBILITY_SETTINGS =
             "android.settings.ACCESSIBILITY_SETTINGS_FOR_SUW";
+
+    private boolean volumeDownLongPress = false;
+    private boolean volumeUpLongPress = false;
 
     @Override
     protected void onStartSubactivity() {
@@ -60,6 +69,43 @@ public class WelcomeActivity extends SubBaseActivity {
             welcomeTitle.setText(getString(R.string.setup_welcome_message,
                     getString(R.string.os_name)));
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                volumeUpLongPress = true;
+            } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+                volumeDownLongPress = true;
+            }
+            event.startTracking();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (volumeUpLongPress && volumeDownLongPress) {
+            boolean enabled = !AccessibilityUtils.getEnabledServicesFromSettings(this,
+                    UserHandle.myUserId()).isEmpty();
+            AccessibilityUtils.setAccessibilityServiceState(this,
+                    new ComponentName("org.calyxos.talkback",
+                            "com.google.android.marvin.talkback.TalkBackService"), !enabled);
+            return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            volumeUpLongPress = false;
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            volumeDownLongPress = false;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
