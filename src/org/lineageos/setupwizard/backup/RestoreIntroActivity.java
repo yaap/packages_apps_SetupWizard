@@ -10,10 +10,10 @@ import static com.google.android.setupcompat.util.ResultCodes.RESULT_ACTIVITY_NO
 
 import static org.lineageos.setupwizard.SetupWizardApp.ACTION_RESTORE_FROM_BACKUP;
 
-import androidx.activity.result.ActivityResult;
-
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResult;
 
 import org.lineageos.setupwizard.R;
 import org.lineageos.setupwizard.SubBaseActivity;
@@ -28,7 +28,7 @@ public class RestoreIntroActivity extends SubBaseActivity {
     }
 
     @Override
-    protected void onActivityResult(ActivityResult activityResult) {
+    protected void onSubactivityResult(ActivityResult activityResult) {
         int resultCode = activityResult.getResultCode();
         Intent data = activityResult.getData();
         if (resultCode != RESULT_CANCELED) {

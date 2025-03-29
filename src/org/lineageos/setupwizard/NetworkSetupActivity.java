@@ -6,6 +6,8 @@
 
 package org.lineageos.setupwizard;
 
+import static com.google.android.setupcompat.util.ResultCodes.RESULT_SKIP;
+
 import static org.lineageos.setupwizard.SetupWizardApp.EXTRA_ENABLE_NEXT_ON_CONNECT;
 import static org.lineageos.setupwizard.SetupWizardApp.EXTRA_PREFS_SET_BACK_TEXT;
 import static org.lineageos.setupwizard.SetupWizardApp.EXTRA_PREFS_SHOW_BUTTON_BAR;
@@ -13,7 +15,6 @@ import static org.lineageos.setupwizard.SetupWizardApp.EXTRA_PREFS_SHOW_SKIP;
 import static org.lineageos.setupwizard.SetupWizardApp.EXTRA_PREFS_SHOW_SKIP_TV;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import org.lineageos.setupwizard.util.SetupWizardUtils;
 
@@ -23,6 +24,11 @@ public class NetworkSetupActivity extends SubBaseActivity {
 
     @Override
     protected void onStartSubactivity() {
+        if ((!SetupWizardUtils.hasWifi(this) && !SetupWizardUtils.hasTelephony(this)) ||
+                SetupWizardUtils.isNetworkConnectedToInternetViaEthernet(this)) {
+            finishAction(RESULT_SKIP);
+            return;
+        }
         if (SetupWizardUtils.isOwner()) {
             tryEnablingWifi();
         }
